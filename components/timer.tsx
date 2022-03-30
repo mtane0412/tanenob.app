@@ -2,7 +2,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { getWindowSize } from "../hooks/getWindowSize";
+import { GetWindowSize } from "../hooks/GetWindowSize";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faPause } from '@fortawesome/free-solid-svg-icons';
 
@@ -30,7 +30,7 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     let sec:number = minute * 60;
     const [time, setTime] = useState(sec);
     const [percentage, setPercentage] = useState(100);
-    const { height, width } = getWindowSize();
+    const { height, width } = GetWindowSize();
     const [isPaused, setIsPaused] = useState(false);
     let pause:MutableRefObject<boolean> = useRef(false);
     const toggleTimer = () => {
