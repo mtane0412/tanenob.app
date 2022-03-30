@@ -2,7 +2,7 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { GetWindowSize } from "../hooks/GetWindowSize";
+import { GetWindowSize } from "../hooks/getwindowsize";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faPause } from '@fortawesome/free-solid-svg-icons';
 
