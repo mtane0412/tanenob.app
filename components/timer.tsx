@@ -19,15 +19,11 @@ type ClockProps = {
 }
 const Clock = ({HH, MM, SS}:ClockProps) => {
     return (
-        <div>
+        <div className="whitespace-nowrap">
             {HH !== '00' && HH + ':'}{MM}:{SS}
         </div>
         );
 }
-
-
-
-
 
 const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     const audioFile = ribenchi ? '/ribenchi-alarm.mp3' : '/alarm.mp3';
@@ -75,10 +71,10 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     
     
     return (
-        <div className="text-gray-900">
+        <div className="text-gray-800 whitespace-nowrap">
             <CircularProgressbar value={percentage} background={true} styles={buildStyles(progressStyle)} className="font-mono h-screen absolute inset-0 z-0" />
             {!isPaused &&
-                <div className={`w-[${height}] m-auto p-14 text-center opacity-75 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
+                <div className={`w-[${height}] m-auto p-14 text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                     <div className="font-mono text-9xl">
                         {remainSec.current > 0
                             ? <Clock HH={HH.current} MM={MM.current} SS={SS.current} />

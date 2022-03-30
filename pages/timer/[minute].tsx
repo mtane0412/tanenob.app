@@ -1,8 +1,6 @@
 import { useRouter } from 'next/router'
 import Timer from '../../components/timer'
 
-// https://localhost:3000/timer/3?title=ribenchi&ribenchi=true
-
 const TimerPage = () => {
     const router = useRouter();
     const minute = router.query.minute;
