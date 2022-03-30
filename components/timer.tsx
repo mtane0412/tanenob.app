@@ -2,7 +2,6 @@
 import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { GetWindowSize } from "../hooks/getwindowsize";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faPause } from '@fortawesome/free-solid-svg-icons';
 
@@ -30,7 +29,6 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     let sec:number = minute * 60;
     const [time, setTime] = useState(sec);
     const [percentage, setPercentage] = useState(100);
-    const { height, width } = GetWindowSize();
     const [isPaused, setIsPaused] = useState(false);
     let pause:MutableRefObject<boolean> = useRef(false);
     const toggleTimer = () => {
@@ -74,7 +72,7 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
         <div className="text-gray-800 whitespace-nowrap">
             <CircularProgressbar value={percentage} background={true} styles={buildStyles(progressStyle)} className="font-mono h-screen absolute inset-0 z-0" />
             {!isPaused &&
-                <div className={`w-[${height}] m-auto p-14 text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
+                <div className={`w-full m-auto p-14 text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                     <div className="font-mono text-9xl">
                         {remainSec.current > 0
                             ? <Clock HH={HH.current} MM={MM.current} SS={SS.current} />
