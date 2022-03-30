@@ -51,13 +51,13 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
         const counting = setInterval(() => {
             if (!pause.current) {
                 remainSec.current = remainSec.current - 1 >= 1 ? remainSec.current - 1 : 0;
-                setTime(remainSec.current);
-                setPercentage(remainSec.current / sec * 100);
                 const ct = new Date(remainSec.current * 1000).toISOString();
                 HH.current = ct.substring(11, 13);
                 MM.current = ct.substring(14, 16);
                 SS.current = ct.substring(17, 19);
                 console.log(`${Math.round(remainSec.current / sec * 100)}%`);
+                setTime(remainSec.current);
+                setPercentage(remainSec.current / sec * 100);
             }
             if (remainSec.current <= 0) {
                 clearInterval(counting);
