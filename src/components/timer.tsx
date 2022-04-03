@@ -3,7 +3,8 @@ import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faPause } from '@fortawesome/free-solid-svg-icons';
+import { faPause } from '@fortawesome/free-solid-svg-icons';
+import { tmpdir } from 'os';
 
 type Props = {
     minute: number
@@ -15,18 +16,42 @@ type ClockProps = {
     HH: string
     MM: string
     SS: string
+    title: string|string[]|undefined
 }
-const Clock = ({HH, MM, SS}:ClockProps) => {
+
+class CurrentTime {
+    now: string;
+    HH: string;
+    MM: string;
+    SS: string;
+    constructor(sec:number) {
+        this.now = new Date(sec * 1000).toISOString();
+        this.HH = this.now.substring(9, 10) === '2' ? '24' : this.now.substring(11, 13);
+        this.MM = this.now.substring(14, 16);
+        this.SS = this.now.substring(17, 19);
+    }
+}
+const ClockFace = ({HH, MM, SS, title}:ClockProps) => {
     return (
-        <div className="whitespace-nowrap">
-            {HH !== '00' && HH + ':'}{MM}:{SS}
-        </div>
+        <>
+            <div className="whitespace-nowrap">
+                {HH !== '00' && HH + ':'}{MM}:{SS}
+            </div>
+            {title &&
+                <div className="font-Zen text-8xl pt-5">{title}</div>
+            }
+        </>
         );
 }
 
-const Timer = ({minute=0, title, end, ribenchi}: Props) => {
-    const audioFile = ribenchi ? '/ribenchi-alarm.mp3' : '/alarm.mp3';
-    let sec:number = minute * 60;
+const Timer = ({minute, title, end, ribenchi}: Props) => {
+    let sec:number;
+    if (Number.isNaN(minute) || minute > 1440) {
+        sec = -1;
+    } else {
+        sec = minute * 60;
+    }
+    const audioFile:string = ribenchi ? '/ribenchi-alarm.mp3' : '/alarm.mp3';
     const [time, setTime] = useState(sec);
     const [percentage, setPercentage] = useState(100);
     const [isPaused, setIsPaused] = useState(false);
@@ -38,9 +63,10 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     }
     
     let remainSec:MutableRefObject<number> = useRef(time);
-    let HH:MutableRefObject<string> = useRef(new Date(remainSec.current * 1000).toISOString().substring(11, 13));
-    let MM:MutableRefObject<string> = useRef(new Date(remainSec.current * 1000).toISOString().substring(14, 16));
-    let SS:MutableRefObject<string> = useRef(new Date(remainSec.current * 1000).toISOString().substring(17, 19));
+    let currentTime = new CurrentTime(remainSec.current);
+    let HH:MutableRefObject<string> = useRef(currentTime.HH);
+    let MM:MutableRefObject<string> = useRef(currentTime.MM);
+    let SS:MutableRefObject<string> = useRef(currentTime.SS);
     const progressStyle = {
         // Colors
         textColor: ribenchi ? '#daa3ff' :'#f88',
@@ -49,12 +75,12 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
     };
     useEffect(()=> {
         const counting = setInterval(() => {
-            if (!pause.current) {
+            if (!pause.current && remainSec.current > 0) {
                 remainSec.current = remainSec.current - 1 >= 1 ? remainSec.current - 1 : 0;
-                const ct = new Date(remainSec.current * 1000).toISOString();
-                HH.current = ct.substring(11, 13);
-                MM.current = ct.substring(14, 16);
-                SS.current = ct.substring(17, 19);
+                currentTime = new CurrentTime(remainSec.current);
+                HH.current = currentTime.HH
+                MM.current = currentTime.MM;
+                SS.current = currentTime.SS;
                 console.log(`${Math.round(remainSec.current / sec * 100)}%`);
                 setTime(remainSec.current);
                 setPercentage(remainSec.current / sec * 100);
@@ -75,13 +101,15 @@ const Timer = ({minute=0, title, end, ribenchi}: Props) => {
                 <div className={`w-full m-auto p-14 text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                     <div className="font-mono text-9xl">
                         {remainSec.current > 0
-                            ? <Clock HH={HH.current} MM={MM.current} SS={SS.current} />
-                            : <div><span>{end ? end : 'finish'}</span><audio autoPlay={true} src={audioFile} /></div>
+                            && <ClockFace HH={HH.current} MM={MM.current} SS={SS.current} title={title} />
+                        }
+                        {remainSec.current === 0
+                            && <div><span>{end ? end : 'finish'}</span><audio autoPlay={true} src={audioFile} /></div>
+                        }
+                        {remainSec.current < 0
+                            && <div><span className=" text-red-400">Error</span></div>
                         }
                     </div>
-                    {title &&
-                        <div className="font-Zen text-8xl pt-5">{title}</div>
-                    }
                 </div>
             }
             <div onClick={()=>toggleTimer()} className="w-full h-full text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
